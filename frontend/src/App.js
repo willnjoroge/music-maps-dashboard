@@ -1,34 +1,33 @@
-import './App.css';
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Game from './components/Game'
+import "./App.css";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Dashboard from "./components/Dashboard";
 
 const App = () => {
-  console.log('testing')
+  console.log("testing");
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />}/>
-        <Route path="/game" element={<Game />}/>
-      </Routes>
-    </Router>
-  )
-}
+    <div className="App">
+      <h1>Spotify Music Dashboard</h1>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </Router>
+    </div>
+  );
+};
 
 const Login = () => {
-  console.log('login')
+  console.log("login");
   return (
-  <div>
-    <h1>Music Guessing Game</h1>
-    <a href="/game">
-      <button disabled>Guess today's songy</button>
-    </a>
-    <a href="http://localhost:5000/login">
-      <button disabled>Login with Spotify</button>
-    </a>
-  </div>
-  )
-}
-
+    <div>
+      <h1>Music Maps Dashboard</h1>
+      <a href="http://localhost:5000/login">
+        <button disabled>Login with Spotify</button>
+      </a>
+    </div>
+  );
+};
 
 export default App;
