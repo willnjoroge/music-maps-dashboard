@@ -2,38 +2,35 @@ const express = require("express");
 const axios = require("axios");
 const router = express.Router();
 
-const getAccessToken = async () => {
-  const tokenUrl = "https://accounts.spotify.com/api/token";
+router.get("/top-songs", async (req, res) => {
+  const accessToken = req.cookies.spotifyAccessToken;
 
-  const response = await axios.post(
-    tokenUrl,
-    new URLSearchParams({
-      grant_type: "client_credentials",
-      client_id: process.env.SPOTIFY_CLIENT_ID,
-      client_secret: process.env.SPOTIFY_CLIENT_SECRET,
-    }).toString(),
-    {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  console.log(accessToken);
+  if (!accessToken) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const savedSongs = "https://api.spotify.com/v1/me/top/artists";
+
+    const response = await axios.get(savedSongs, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    console.log(response);
+
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+
+    if (error.response?.status === 401) {
+      return res.status(401).json({ error: "Access token expired" });
     }
-  );
 
-  return response.data.access_token;
-};
-
-router.get("/saved-songs", async (req, res) => {
-  const accessToken = await getAccessToken();
-
-  const savedSongs = `https://api.spotify.com/v1/{saved-songs}/`;
-
-  const response = await axios.get(savedSongs, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  console.log(response);
-
-  res.json(response);
+    res.status(500).json({ message: "Server Error" });
+  }
 });
 
 module.exports = router;

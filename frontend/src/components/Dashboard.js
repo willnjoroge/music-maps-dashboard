@@ -5,10 +5,24 @@ import "leaflet/dist/leaflet.css";
 import worldGeoJSON from "../data/world.json";
 
 const Dashboard = () => {
-  const [topSongs, setTopSongs] = useState([]);
+  const [userData, setUserData] = useState(null);
+  const [countriesList, setCountriesList] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState(null);
 
-  const handleCountryClick = async (e) => {
+  const fetchTopTracks = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/spotify/top-songs",
+        { withCredentials: true }
+      );
+      setCountriesList(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const displayCountryInfo = async (e) => {
     const countryName = e.sourceTarget.feature.properties.name;
     setSelectedCountry(countryName);
     fetchTopSongsForCountry(countryName);
@@ -26,17 +40,27 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="App">
-      <MapContainer center={[20, 0]} zoom={2} style={{ height: "100vh" }}>
-        <TileLayer url="https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoid25qb3JvZ2UiLCJhIjoiY201aTlsZG10MHVzNDJpczdjYTZzZmZiOCJ9.tV2G6_zvkAvHzmrK6xGKVg" />
-        <GeoJSON
-          data={worldGeoJSON}
-          style={mapStyle}
-          eventHandlers={{ click: handleCountryClick }}
-        />
-      </MapContainer>
+    <div className="dashboard">
+      <div className="user-info">
+        <h2>Welcome, {userData?.display_name}</h2>
+        <p>
+          You have listened to music in {countriesList?.length} countries. Click
+          on a country to see your top songs there.
+        </p>
+        <button onClick={fetchTopTracks}>Fetch My Top Tracks</button>
+      </div>
+      <div className="map-container">
+        <MapContainer center={[20, 0]} zoom={2} style={{ height: "100vh" }}>
+          <TileLayer url="https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoid25qb3JvZ2UiLCJhIjoiY201aTlsZG10MHVzNDJpczdjYTZzZmZiOCJ9.tV2G6_zvkAvHzmrK6xGKVg" />
+          <GeoJSON
+            data={worldGeoJSON}
+            style={mapStyle}
+            eventHandlers={{ click: displayCountryInfo }}
+          />
+        </MapContainer>
+      </div>
 
-      <div className="song-info">
+      {/* <div className="song-info">
         <h2>Top songs listed to by you in {selectedCountry}</h2>
         {topSongs.length ? (
           <ul>
@@ -53,7 +77,7 @@ const Dashboard = () => {
         ) : (
           <p>Loading songs...</p>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };
