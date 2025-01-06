@@ -1,29 +1,53 @@
-import React, { useState } from "react";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-import axios from "axios";
-import "leaflet/dist/leaflet.css";
-import worldGeoJSON from "../data/world.json";
+import React, { useState, useEffect } from "react";
+import GlobeComponent from "./Globe";
+import spotifyApi from "../services/spotify";
+import "../App.css";
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
-  const [countriesList, setCountriesList] = useState(null);
+  const [highlightedCountries, setHighlightedCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [isRotating, setIsRotating] = useState(false);
+  const [isInteractive, setIsInteractive] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await spotifyApi.fetchUserInfo();
+        setUserData(response);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const fetchTopTracks = async () => {
+    setHighlightedCountries([]);
+    setIsRotating(true);
+    setIsInteractive(false);
+
+    console.log(isRotating);
+
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/spotify/top-songs",
-        { withCredentials: true }
-      );
-      setCountriesList(response.data);
-      console.log(response.data);
+      const response = await spotifyApi.fetchTopTracks();
+      const countries = response.map((artist) => artist.country);
+      setHighlightedCountries(countries);
+
+      console.log(highlightedCountries);
+      console.log(highlightedCountries.includes("US"));
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsRotating(false);
+      setIsInteractive(true);
     }
   };
 
-  const displayCountryInfo = async (e) => {
-    const countryName = e.sourceTarget.feature.properties.name;
+  const displayCountryInfo = async (country) => {
+    console.log(country);
+    const countryName = country.name;
     setSelectedCountry(countryName);
     fetchTopSongsForCountry(countryName);
   };
@@ -32,32 +56,26 @@ const Dashboard = () => {
     // fetch artists (& tracks)
   };
 
-  const mapStyle = {
-    color: "#ffffff",
-    weight: 1,
-    fillOpacity: 0,
-    opacity: 0.7,
-  };
-
   return (
     <div className="dashboard">
       <div className="user-info">
-        <h2>Welcome, {userData?.display_name}</h2>
+        {/* <img src={userData?.}></img> */}
+        <div>
+          <h2>{userData?.display_name}</h2>
+          <p>{userData?.email}</p>
+        </div>
         <p>
-          You have listened to music in {countriesList?.length} countries. Click
-          on a country to see your top songs there.
+          You have listened to artists from {highlightedCountries.length}{" "}
+          countries. Click on a country to see your top songs there.
         </p>
         <button onClick={fetchTopTracks}>Fetch My Top Tracks</button>
       </div>
-      <div className="map-container">
-        <MapContainer center={[20, 0]} zoom={2} style={{ height: "100vh" }}>
-          <TileLayer url="https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoid25qb3JvZ2UiLCJhIjoiY201aTlsZG10MHVzNDJpczdjYTZzZmZiOCJ9.tV2G6_zvkAvHzmrK6xGKVg" />
-          <GeoJSON
-            data={worldGeoJSON}
-            style={mapStyle}
-            eventHandlers={{ click: displayCountryInfo }}
-          />
-        </MapContainer>
+      <div className="globe-container">
+        <GlobeComponent
+          highlightedCountries={highlightedCountries}
+          isRotating={isRotating}
+          isInteractive={isInteractive}
+        />
       </div>
 
       {/* <div className="song-info">

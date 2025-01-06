@@ -8,9 +8,11 @@
     "cra-template": "1.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-globe.gl": "^2.28.3",
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.1.1",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "three": "^0.172.0"
   },
   "scripts": {
     "start": "DISABLE_HMR=true react-scripts start",

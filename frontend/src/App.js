@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import Landing from "./components/Landing";
+import "./App.css";
 // import { AuthContext } from "./context/AuthContext";
 
 const App = () => {
