@@ -65,4 +65,57 @@ router.get("/callback", async (req, res) => {
   }
 });
 
+router.get("/refresh-token", async (req, res) => {
+  const refreshToken = req.cookies.spotifyRefreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const tokenUrl = "https://api.spotify.com/api/token";
+
+    const response = await axios.get(tokenUrl, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      params: {
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+        client_id: process.env.SPOTIFY_CLIENT_ID,
+        client_secret: process.env.SPOTIFY_CLIENT_SECRET,
+      },
+    });
+
+    const { access_token } = response.data;
+
+    res.cookie("spotifyAccessToken", access_token, {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+      maxAge: 3600000,
+    });
+
+    res.json({ message: "Token refreshed successfully" });
+  } catch (error) {
+    console.error(
+      "Error refreshing token",
+      error.response?.data || error.message
+    );
+
+    res.status(500).json({ error: "Failed to refresh token" });
+  }
+});
+
+const generateRandomString = (length) => {
+  var text = "";
+  var possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+};
+
 export default router;

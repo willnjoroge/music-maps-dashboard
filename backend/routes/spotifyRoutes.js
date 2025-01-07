@@ -122,6 +122,7 @@ const fetchArtistCountryInfo = async (artist) => {
     return {
       name: artist.name,
       country: artistData.country || null,
+      image: artist.images[0].url,
     };
   } catch (error) {
     console.error(`Error fetching data for artist: ${artist.name}`, error);

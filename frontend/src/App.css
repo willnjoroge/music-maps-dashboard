@@ -67,6 +67,7 @@ h3 {
 }
 
 .dashboard {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -98,4 +99,17 @@ h3 {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.country-info {
+  background-color: #000;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  border-radius: 10px;
+  padding: 10px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 50px;
+  right: 50px;
 }

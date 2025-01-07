@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import GlobeComponent from "./Globe";
 import spotifyApi from "../services/spotify";
 import "../App.css";
+import CountryInfo from "./CountryInfo";
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
+  const [artistsData, setArtistsData] = useState([]);
   const [highlightedCountries, setHighlightedCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [isRotating, setIsRotating] = useState(false);
@@ -24,13 +26,15 @@ const Dashboard = () => {
   }, []);
 
   const fetchTopTracks = async () => {
+    setArtistsData([]);
     setHighlightedCountries([]);
     setIsRotating(true);
     setIsInteractive(false);
 
     try {
       const response = await spotifyApi.fetchTopTracks();
-      const countries = response.map((artist) => artist.country);
+      setArtistsData(response);
+      const countries = [...new Set(response.map((artist) => artist.country))];
       setHighlightedCountries(countries);
     } catch (error) {
       console.error(error);
@@ -41,14 +45,19 @@ const Dashboard = () => {
   };
 
   const displayCountryInfo = async (country) => {
-    console.log(country);
-    const countryName = country.name;
-    setSelectedCountry(countryName);
-    fetchTopSongsForCountry(countryName);
-  };
-
-  const fetchTopSongsForCountry = async (country) => {
-    // fetch artists (& tracks)
+    if (country) {
+      const selectedInfo = {
+        countryName: country.NAME,
+        countryCode: country.ISO_A2,
+        items: artistsData.filter(
+          (artist) => artist.country === country.ISO_A2
+        ),
+      };
+      console.log(selectedInfo);
+      setSelectedCountry(selectedInfo);
+    } else {
+      setSelectedCountry(null);
+    }
   };
 
   return (
@@ -70,27 +79,11 @@ const Dashboard = () => {
           highlightedCountries={highlightedCountries}
           isRotating={isRotating}
           isInteractive={isInteractive}
+          onPolygonClick={displayCountryInfo}
         />
       </div>
 
-      {/* <div className="song-info">
-        <h2>Top songs listed to by you in {selectedCountry}</h2>
-        {topSongs.length ? (
-          <ul>
-            {topSongs.map((song, index) => (
-              <li key={index}>
-                <strong>{song.name}</strong> by {song.artist}
-                <a href={song.previewUrl} target="_blank" rel="noreferrer">
-                  {" "}
-                  Listen
-                </a>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>Loading songs...</p>
-        )}
-      </div> */}
+      {selectedCountry && <CountryInfo selectedCountry={selectedCountry} />}
     </div>
   );
 };

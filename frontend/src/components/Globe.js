@@ -5,9 +5,9 @@ const GlobeComponent = ({
   highlightedCountries,
   isRotating,
   isInteractive,
+  onPolygonClick,
 }) => {
   const [geoJson, setGeoJson] = useState({ features: [] });
-  const [hoverD, setHoverD] = useState();
   const [clickD, setClickD] = useState();
   const globeEl = useRef();
 
@@ -34,7 +34,9 @@ const GlobeComponent = ({
       polygonsData={geoJson.features.filter(
         (d) => d.properties.ISO_A2 !== "AQ"
       )}
-      polygonAltitude={(d) => (d === clickD ? 0.12 : 0.01)}
+      polygonAltitude={({ properties: d }) =>
+        d.ISO_A2 === clickD ? 0.12 : 0.01
+      }
       polygonCapColor={({ properties: d }) =>
         highlightedCountries.includes(d.ISO_A2)
           ? "#1db954"
@@ -45,9 +47,16 @@ const GlobeComponent = ({
       polygonLabel={({ properties: d }) => `
         <b>${d.ADMIN} (${d.ISO_A2}):</b> 
       `}
-      onPolygonHover={setHoverD}
       polygonsTransitionDuration={300}
-      onPolygonClick={setClickD}
+      onPolygonClick={({ properties: d }) => {
+        if (d.ISO_A2 === clickD) {
+          setClickD(null);
+          onPolygonClick(null);
+        } else {
+          setClickD(d.ISO_A2);
+          onPolygonClick(d);
+        }
+      }}
       enablePointerInteraction={isInteractive}
     />
   );
