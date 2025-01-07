@@ -1,8 +1,13 @@
 body {
   margin: 0;
   font-family: "Arial", sans-serif;
-  background-color: #000;
+  background-color: #121212;
   color: #fff;
+  height: 100vh;
+}
+
+#root {
+  height: 100%;
 }
 
 a {
@@ -25,8 +30,34 @@ button:hover {
   background-color: #1aa34a; /* Slightly darker green */
 }
 
-.container {
-  padding: 20px;
+.landing-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background: url("https://unpkg.com/three-globe/example/img/night-sky.png");
+}
+
+.content-container {
+  text-align: center;
+  padding: 30px;
+  border-radius: 10px;
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+  width: 80%;
+  max-width: 500px;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.description {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  color: #ddd;
 }
 
 h1,
@@ -38,7 +69,7 @@ h3 {
 .dashboard {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   background: #000;
   color: #fff;
 }

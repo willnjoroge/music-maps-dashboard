@@ -1,7 +1,17 @@
-const express = require("express");
-const axios = require("axios");
+import express from "express";
+import axios from "axios";
+
+import { MusicBrainzApi } from "musicbrainz-api";
+import pLimit from "p-limit";
+
+const limit = pLimit(50);
+const mbApi = new MusicBrainzApi({
+  appName: "my-app",
+  appVersion: "0.1.0",
+  appContactInfo: "user@mail.org",
+});
+
 const router = express.Router();
-const { loadMusicBrainzApi } = require("musicbrainz-api");
 
 router.get("/user", async (req, res) => {
   const accessToken = req.cookies.spotifyAccessToken;
@@ -39,51 +49,16 @@ router.get("/top-artists", async (req, res) => {
   }
 
   try {
-    const topArtists = "https://api.spotify.com/v1/me/top/artists";
+    const artists = await fetchAllTopTracks(accessToken);
+    const artistCountries = [];
 
-    const response = await axios.get(topArtists, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    const artists = response.data.items;
-
-    const { MusicBrainzApi } = await loadMusicBrainzApi();
-
-    const mbApi = new MusicBrainzApi({
-      appName: "my-app",
-      appVersion: "0.1.0",
-      appContactInfo: "user@mail.org",
-    });
-
-    const artistCountries = await Promise.all(
-      artists.map(async (artist) => {
-        try {
-          const musicBrainzResponse = await mbApi.browse("artist", {
-            query: artist.name,
-          });
-
-          const artistData = musicBrainzResponse.artists[0];
-
-          if (!artistData) {
-            return null;
-          }
-
-          return {
-            name: artist.name,
-            country: artistData.country || null,
-          };
-        } catch (error) {
-          console.error(
-            `Error fetching data for artist: ${artist.name}`,
-            error
-          );
-          return { name: artist.name, country: null };
-        }
-      })
+    const promises = artists.map((artist) =>
+      limit(() => fetchArtistCountryInfo(artist))
     );
 
+    const results = await Promise.all(promises);
+
+    artistCountries.push(...results);
     res.json(artistCountries);
   } catch (error) {
     console.error(error);
@@ -96,4 +71,62 @@ router.get("/top-artists", async (req, res) => {
   }
 });
 
-module.exports = router;
+const fetchAllTopTracks = async (accessToken) => {
+  const tracks = [];
+  const limit = 50;
+  let offset = 0;
+
+  try {
+    while (true) {
+      const topArtists = "https://api.spotify.com/v1/me/top/artists";
+
+      const response = await axios.get(topArtists, {
+        withCredentials: true,
+        params: {
+          limit: limit,
+          offset,
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      tracks.push(...response.data.items);
+
+      if (tracks.length >= response.data.total) {
+        break;
+      }
+
+      offset += limit;
+    }
+
+    return tracks;
+  } catch (err) {
+    console.error("Error fetching top tracks from Spotify", err);
+  }
+};
+
+const fetchArtistCountryInfo = async (artist) => {
+  try {
+    const musicBrainzResponse = await mbApi.browse("artist", {
+      query: artist.name,
+      limit: 1,
+    });
+
+    const artistData = musicBrainzResponse.artists[0];
+
+    if (!artistData) {
+      return null;
+    }
+
+    return {
+      name: artist.name,
+      country: artistData.country || null,
+    };
+  } catch (error) {
+    console.error(`Error fetching data for artist: ${artist.name}`, error);
+    return { name: artist.name, country: null };
+  }
+};
+
+export default router;

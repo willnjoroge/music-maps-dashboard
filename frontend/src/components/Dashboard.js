@@ -28,15 +28,10 @@ const Dashboard = () => {
     setIsRotating(true);
     setIsInteractive(false);
 
-    console.log(isRotating);
-
     try {
       const response = await spotifyApi.fetchTopTracks();
       const countries = response.map((artist) => artist.country);
       setHighlightedCountries(countries);
-
-      console.log(highlightedCountries);
-      console.log(highlightedCountries.includes("US"));
     } catch (error) {
       console.error(error);
     } finally {

@@ -12,8 +12,6 @@ const GlobeComponent = ({
   const globeEl = useRef();
 
   useEffect(() => {
-    console.log(isInteractive);
-    console.log(isRotating);
     // load world geojson data
     fetch("/world.geojson")
       .then((res) => res.json())
@@ -25,7 +23,7 @@ const GlobeComponent = ({
 
     // Auto-rotate
     globe.controls().autoRotate = isRotating ? true : false;
-    globe.controls().autoRotateSpeed = isRotating ? 0.35 : 0;
+    globe.controls().autoRotateSpeed = isRotating ? 5 : 0;
   }, [isInteractive, isRotating]);
 
   return (
@@ -50,6 +48,7 @@ const GlobeComponent = ({
       onPolygonHover={setHoverD}
       polygonsTransitionDuration={300}
       onPolygonClick={setClickD}
+      enablePointerInteraction={isInteractive}
     />
   );
 };
