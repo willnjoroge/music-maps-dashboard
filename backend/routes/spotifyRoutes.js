@@ -113,6 +113,8 @@ const fetchArtistCountryInfo = async (artist) => {
       limit: 1,
     });
 
+    console.log(musicBrainzResponse);
+
     const artistData = musicBrainzResponse.artists[0];
 
     if (!artistData) {

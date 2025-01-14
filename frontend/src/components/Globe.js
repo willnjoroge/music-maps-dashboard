@@ -23,7 +23,7 @@ const GlobeComponent = ({
 
     // Auto-rotate
     globe.controls().autoRotate = isRotating ? true : false;
-    globe.controls().autoRotateSpeed = isRotating ? 5 : 0;
+    globe.controls().autoRotateSpeed = isRotating ? 10 : 0;
   }, [isInteractive, isRotating]);
 
   return (
