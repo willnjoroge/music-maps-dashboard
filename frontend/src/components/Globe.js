@@ -5,7 +5,9 @@ const GlobeComponent = ({
   highlightedCountries,
   isRotating,
   isInteractive,
+  pointOfView,
   onPolygonClick,
+  selectedCountry,
 }) => {
   const [geoJson, setGeoJson] = useState({ features: [] });
   const [clickD, setClickD] = useState();
@@ -23,8 +25,9 @@ const GlobeComponent = ({
 
     // Auto-rotate
     globe.controls().autoRotate = isRotating ? true : false;
-    globe.controls().autoRotateSpeed = isRotating ? 10 : 0;
-  }, [isInteractive, isRotating]);
+    globe.controls().autoRotateSpeed = isRotating ? 7 : 0;
+    globe.pointOfView(pointOfView, 1500);
+  }, [isInteractive, isRotating, pointOfView, selectedCountry]);
 
   return (
     <Globe
@@ -35,7 +38,7 @@ const GlobeComponent = ({
         (d) => d.properties.ISO_A2 !== "AQ"
       )}
       polygonAltitude={({ properties: d }) =>
-        d.ISO_A2 === clickD ? 0.12 : 0.01
+        d.ISO_A2 === clickD && selectedCountry ? 0.12 : 0.01
       }
       polygonCapColor={({ properties: d }) =>
         highlightedCountries.includes(d.ISO_A2)
@@ -48,13 +51,15 @@ const GlobeComponent = ({
         <b>${d.ADMIN} (${d.ISO_A2}):</b> 
       `}
       polygonsTransitionDuration={300}
-      onPolygonClick={({ properties: d }) => {
-        if (d.ISO_A2 === clickD) {
-          setClickD(null);
-          onPolygonClick(null);
-        } else {
-          setClickD(d.ISO_A2);
-          onPolygonClick(d);
+      onPolygonClick={(d) => {
+        if (highlightedCountries.includes(d.properties.ISO_A2)) {
+          if (d.properties.ISO_A2 === clickD) {
+            setClickD(null);
+            onPolygonClick(null);
+          } else {
+            setClickD(d.properties.ISO_A2);
+            onPolygonClick(d);
+          }
         }
       }}
       enablePointerInteraction={isInteractive}

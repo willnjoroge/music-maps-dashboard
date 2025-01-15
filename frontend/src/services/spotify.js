@@ -9,7 +9,7 @@ const spotifyApi = {
     });
     return response.data;
   },
-  fetchTopTracks: async () => {
+  fetchTopArtists: async () => {
     const response = await axios.get(`${API_BASE_URL}/top-artists`, {
       withCredentials: true,
     });

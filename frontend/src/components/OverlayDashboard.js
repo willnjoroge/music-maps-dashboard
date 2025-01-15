@@ -7,7 +7,7 @@ const OverlayDashboard = ({ onFetch, isLoading }) => {
         <div className="loader">Loading.....</div>
       ) : (
         <button className="fetch-button" onClick={onFetch}>
-          Fetch Top Tracks
+          Fetch Top Artists
         </button>
       )}
     </div>

@@ -12,15 +12,20 @@ const Dashboard = () => {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [isRotating, setIsRotating] = useState(false);
   const [isInteractive, setIsInteractive] = useState(true);
+  const [pointOfView, setPointOfView] = useState({
+    lat: 0,
+    lng: 0,
+    altitude: 2.5,
+  });
 
-  const fetchTopTracks = async () => {
+  const fetchTopArtists = async () => {
     setArtistsData([]);
     setHighlightedCountries([]);
     setIsRotating(true);
     setIsInteractive(false);
 
     try {
-      const response = await spotifyApi.fetchTopTracks();
+      const response = await spotifyApi.fetchTopArtists();
       setArtistsData(response);
       const countries = [...new Set(response.map((artist) => artist.country))];
       setHighlightedCountries(countries);
@@ -34,16 +39,32 @@ const Dashboard = () => {
 
   const displayCountryInfo = async (country) => {
     if (country) {
+      const countryProperties = country.properties;
       const selectedInfo = {
-        countryName: country.NAME,
-        countryCode: country.ISO_A2,
+        countryName: countryProperties.NAME,
+        countryCode: countryProperties.ISO_A2,
         items: artistsData.filter(
-          (artist) => artist.country === country.ISO_A2
+          (artist) => artist.country === countryProperties.ISO_A2
         ),
       };
       setSelectedCountry(selectedInfo);
+      console.log(selectedCountry);
+
+      const lat = (country.bbox[1] + country.bbox[3]) / 2;
+      const lng = (country.bbox[0] + country.bbox[2]) / 2;
+      // TO DO: set altitude based on bounding box
+
+      setPointOfView({
+        lat: lat,
+        lng: lng,
+        altitude: 1,
+      });
     } else {
       setSelectedCountry(null);
+      setPointOfView({
+        ...pointOfView,
+        altitude: 1.5,
+      });
     }
   };
 
@@ -52,17 +73,25 @@ const Dashboard = () => {
       <Header />
       <div className="globe-container">
         {!artistsData.length && (
-          <OverlayDashboard onFetch={fetchTopTracks} isLoading={isRotating} />
+          <OverlayDashboard onFetch={fetchTopArtists} isLoading={isRotating} />
         )}
+
+        {selectedCountry && (
+          <CountryInfo
+            selectedCountry={selectedCountry}
+            returnToMap={displayCountryInfo}
+          />
+        )}
+
         <GlobeComponent
           highlightedCountries={highlightedCountries}
           isRotating={isRotating}
           isInteractive={isInteractive}
+          pointOfView={pointOfView}
           onPolygonClick={displayCountryInfo}
+          selectedCountry={selectedCountry}
         />
       </div>
-
-      {selectedCountry && <CountryInfo selectedCountry={selectedCountry} />}
     </div>
   );
 };

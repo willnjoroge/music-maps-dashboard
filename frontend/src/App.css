@@ -67,7 +67,6 @@ h3 {
 }
 
 .dashboard {
-  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -106,17 +105,27 @@ h3 {
   align-items: center;
 }
 
-.country-info {
+.country-container {
+  position: absolute;
+  z-index: 100;
+  top: 20%;
+  left: 5%;
+  display: flex;
+  max-width: 500px;
+  padding: 0 30px;
+}
+
+.country {
   background-color: #000;
   border-top: 1px solid #fff;
   border-bottom: 1px solid #fff;
   border-radius: 10px;
   padding: 10px;
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  top: 50px;
-  right: 50px;
+}
+
+.artists-list {
+  max-height: 400px;
+  overflow: auto;
 }
 
 .artist-info {
