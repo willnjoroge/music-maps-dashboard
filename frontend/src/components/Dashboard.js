@@ -5,6 +5,7 @@ import "../App.css";
 import CountryInfo from "./CountryInfo";
 import Header from "./Header";
 import OverlayDashboard from "./OverlayDashboard";
+import Summary from "./Summary";
 
 const Dashboard = () => {
   const [artistsData, setArtistsData] = useState([]);
@@ -76,11 +77,13 @@ const Dashboard = () => {
           <OverlayDashboard onFetch={fetchTopArtists} isLoading={isRotating} />
         )}
 
-        {selectedCountry && (
+        {selectedCountry ? (
           <CountryInfo
             selectedCountry={selectedCountry}
             returnToMap={displayCountryInfo}
           />
+        ) : (
+          <Summary highlightedCountries={highlightedCountries} />
         )}
 
         <GlobeComponent

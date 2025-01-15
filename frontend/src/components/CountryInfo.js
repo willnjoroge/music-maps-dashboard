@@ -2,9 +2,9 @@ import React from "react";
 
 const CountryInfo = ({ selectedCountry, returnToMap }) => {
   return (
-    <div className="country-container">
+    <div className="popup-container">
       <button onClick={() => returnToMap(null)}>X</button>
-      <div className="country">
+      <div className="content">
         <div className="header-container">
           <h2>Top artists listed to by you in {selectedCountry.countryName}</h2>
         </div>

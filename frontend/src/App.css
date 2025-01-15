@@ -105,7 +105,7 @@ h3 {
   align-items: center;
 }
 
-.country-container {
+.popup-container {
   position: absolute;
   z-index: 100;
   top: 20%;
@@ -115,7 +115,7 @@ h3 {
   padding: 0 30px;
 }
 
-.country {
+.content {
   background-color: #000;
   border-top: 1px solid #fff;
   border-bottom: 1px solid #fff;
