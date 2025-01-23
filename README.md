@@ -1,14 +1,30 @@
-# music-maps-dashboard
+# :construction: Music Maps Dashboard - Under Construction :construction:
 
-## Initial Implementation
+Welcome to Music Maps Dashboard :musical_note:
 
-- User gives application authorization to Spotify account
-- Loading screen
-- Load Interactive Map with filled in countries of user's saved songs history
-- Once user clicks country, display songs/artists associated to country
+:construction_worker_man: This project is currently a work in progress, and I'm actively building and improving it :construction_worker_woman:
 
-## Future Additions
+## :hammer_and_wrench: Current Status
 
-- Incorporate heat map, percentage can be based on various info (ie. artist is a feature, number of times listened - if that's provided)
-- Allow users to triage by top artists, top tracks, specific playlists, followed artists (it can be dropdown)
-- Allow user to upload spotify stream history
+Early development / Prototyping
+
+## :open_book: About the Project
+
+The Music Maps Dashboard is a web application that uses the Spotify API to retrieve a user's music listening history and preferences. The app then maps the countries of the artists they listen to on to an interactive 3D globe using MusicBrainz's API. Users can visually explore their music tastes geographically and discover new insights about their favourite artists.
+
+**Technology:**
+
+- Frontend: React
+- Backend: Node.js
+
+## :rocket: Planned Features
+
+- :earth_africa: Display artists' countries on an interactive globe using 3D visualization
+- :repeat: Real-time syncing of Spotify listening data with user authentication
+- :bar_chart: Generate visual summaries of user listening habits, including top genres and most-listened-to regions
+- :telescope: Explore artist details directly from the globe interface
+- :file_folder: Enable user upload of their spotify stream history
+
+## :warning: Disclaimer
+
+This project is under active development and may have incomplete features, bugs, or significant changes in the coming weeks. Use at your own risk, and feel free to reach out with any questions or concerns.
